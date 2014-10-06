@@ -1,0 +1,40 @@
+import random, time
+
+while True:
+    print()
+    print("Luck Calculator")
+    print("- - - - - - - -")
+    luck, total = 0, 0
+    name = input("Enter you name: ")
+    age = input("Enter your age: ")
+    numbers = []
+    while age == " " or not age.isdigit() or int(age) >100:
+        print("Not an appropriate age.")
+        print()
+        age = input("Enter your age again: ")
+    print()
+    print("Calculating your luck.", end = " ")
+    for i in range(5):
+        time.sleep(0.2)
+        print(" . ", end = " ")
+    print()
+    age = 100*int(age)
+    while age >= 0:
+        number = random.randint(0, 1)
+        if number == 1:
+            luck = luck + 1
+        total = total + 1
+        age = age -1
+    result = (100*luck)/total
+    print()
+    if result > 90:
+        print("Wow! %s, you are the luckiest person today. \nYou are %0.2f %% lucky today." % (name, result))
+    if result > 70 and result < 91:
+        print("Today might be your lucky day, %s. \nYou are %0.2f %% lucky today." % (name, result))
+    if result > 50 and result < 71:
+        print("Seems like you are not much unlucky today, %s. \nYou are %0.2f %% lucky today." % (name, result))
+    else:
+            print("WTF! Don't do anything today, %s. It's not your day. \nYou are just %0.2f %% lucky today." % (name, result))
+    print()
+    if not input("Do you want to calculate you luck again? (Yes or No) :").lower().startswith("y"):
+        break        
