@@ -1,0 +1,121 @@
+import random, time
+
+HANGMANPICS = ["""
+
+
+
+                     ""","""      
+         O        
+                    
+                    
+                     ""","""                
+            
+         O        
+         |         
+                    
+                    ""","""
+           
+         O        
+        /|        
+                    
+                    ""","""
+            
+         O        
+        /|\      
+                    
+                     ""","""
+          
+         O        
+        /|\      
+        /         
+                    ""","""
+        
+         O        
+        /|\       
+        / \       
+                     """]
+words = {'animals':'ant baboon badger bat bear beaver camel cat clam cobra cougar coyote crow deer dog donkey duck eagle ferret fox frog goat goose hawk lion lizard llama mole monkey moose mouse mule newt otter owl panda parrot pigeon python rabbit ram rat raven rhino salmon seal shark sheep skunk sloth snake spider stork swan tiger toad trout turkey turtle weasel whale wolf wombat zebra'.split(), 'colour':'indigo silver purple white orange black blue violet yellow green pink brown'.split(), 'fruit':'apple orange mango banana grape olive peach lichi papaya'.split(), 'sport':'football volleyball cricket basketball soccer swimming tennis javlin wrestling skating snooker'.split(), 'country':'nepal argentina afganistan australia america britain belgium bangladesh brazil cameroon canada china croatia chile denmark ecuador england estonia france finland germany greenland ghana haiti hungary iceland india iraq iran indonesia israel japan jordan jamaica kenya korea kuwait libya maldives malaysia mexico myanmar nepal netherland norway nigeria pakistan peru portugal poland qatar russia romania syria sweden switzerland spain singapore thailand turkey uganda ukraine uruguay vietnam '.split()  }
+
+def getWord():  #Selects a random word from the list.
+    wordKey = random.choice(list(words.keys()))
+    word = random.choice(words[wordKey])
+    return wordKey, word
+
+def board():    # Displays the play board.
+    print(HANGMANPICS[len(missedWords)])
+    time.sleep(1)
+    print("-------------------------------------------------")
+    print("Missed Words: "+missedWords)
+    time.sleep(1)
+    print("Category: "+wordKey)
+    blanks = "_"*len(secretWord)
+    for i in range(len(secretWord)):
+        if secretWord[i] in correctWords:
+            blanks = blanks[:i] + secretWord[i] + blanks[i+1:]
+    print("Secret Word: ", end = "")
+    for letter in blanks:
+        print(letter, end= " ")
+    print()
+
+def getGuess(alreadyGuessed): # Receives valid inputs.
+    while True:
+        guess = input("Guess a letter: ").lower()
+        if len(guess) != 1:
+            print("Please enter only one letter. \n")
+        elif guess not in "qwertyuioplkjhgfdsazxcvbnm":
+            print("Invalid letter detected! Enter alphabets only. \n")
+        elif guess in alreadyGuessed:
+            print("The word is already guessed. Please enter another letter. \n")
+        else:
+            return guess
+         
+def playAgain():
+    print()
+    print("Do you want to play again? (Yes/No)")
+    return input().lower().startswith("y")
+
+      
+missedWords = ""
+correctWords = ""
+wordKey, secretWord = getWord()
+gameDone = False
+print()
+print('''H A N G M A N''')
+print("-------------------")
+while True:
+    board()
+    guess = getGuess(missedWords + correctWords)
+    if guess in secretWord:
+        correctWords = correctWords + guess
+        for u in range(len(secretWord)):
+            if secretWord[u] not in correctWords:
+                gameDone = False
+                break
+            else:
+                gameDone = True
+        if gameDone:
+            board()
+            print("Yes! The secret word was "+secretWord+".")
+    else:
+        missedWords = missedWords + guess
+        if len(missedWords) == len(HANGMANPICS) - 1:
+            print(HANGMANPICS[len(missedWords)])
+            print("You are out of your turns. The secret word was "+secretWord+".")
+            gameDone = True
+            
+        else:
+            gameDone = False
+    if gameDone:
+        if playAgain():
+            missedWords = ""
+            correctWords = ""
+            wordKey, secretWord = getWord()
+            gameDone = False
+            print('''H A N G M A N''')
+            print("-------------------")
+        else:
+            print("Thanks for playing.")
+            time.sleep(1)
+            break
+
+    
