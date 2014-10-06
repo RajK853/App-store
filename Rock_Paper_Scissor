@@ -1,0 +1,97 @@
+import time, random, sys
+moves = ["rock", "paper", "scissor"]
+
+def playerMove(moves):
+    Pmove = "" # Player's Move
+    while Pmove not in moves:
+        Pmove = input("Make your move (rock, paper, scissor or quit): ").lower()
+        if Pmove == "quit": # If you want to quit.
+            return Pmove
+    return Pmove
+
+def checkMove(moves, Pmove, Cmove): #Moves, Player Move and Computer Move
+    if Pmove == Cmove:
+        return "Tie!"
+    for i in range(len(moves)):
+        if Pmove == moves[i]:
+            j = i +1
+            if j > 2:
+                j -= 3
+            if Cmove == moves[j]:
+                return "You lose!"
+            else:
+                return "You win!"
+            
+def selectMode():
+    mode = 5 # To make the While statement True
+    game = [1, 3, 5, 1000000] # Single mode, Best of 3, Best of 5 and Xtreme Mode maximum games
+    while mode > 4 or mode < 1:
+        mode = input("Select the mode (1-4): ")
+        if not mode.isdigit():
+            mode = 5
+            continue
+        mode = int(mode)
+    return game[mode-1]
+
+def playAgain():
+    print()
+    return input("Do you want to play again? {Y/N}  ").lower().startswith("y")
+
+
+while True: # Functions end and program starts here.
+    print()
+    print("                Rock - - Paper - - Scissor")
+    print()
+    print("Modes: ")
+    print("1) Single game.")
+    print("2) Best of three.")
+    print("3) Best of five.")
+    print("4) Xtreme Mode (Game ends only when you type 'quit')")
+    print()
+    MAXGAME = selectMode()
+    Pscore, Cscore = 0, 0 # Player and Computer Score
+    i = 0
+    while i < MAXGAME:
+        print()
+        print("#%s Mode : " % (i+1), end = "")
+        modeName = { 1 : "Single game", 3 : "Best of three", 5 : "Best of Five", 1000000 : "Xtreme Mode"}
+        for x in range(len(modeName[MAXGAME])):
+            print(modeName[MAXGAME][x], end = "")
+            time.sleep(0.1)
+        print()
+        Cmove = random.choice(moves) # Randomly selects computer's move
+        print("Computer's Move: ", end = " ")
+        for x in range(6):
+            print("x", end = " ")
+            time.sleep(0.1)
+        print()
+        Pmove = playerMove(moves) # Takes input from player
+        if Pmove == "quit":
+            print("Thanks for playing.")
+            time.sleep(0.3)
+            sys.exit()
+        print()
+        print("   Computer:      Player:")
+        time.sleep(0.4)
+        print("     %s           %s" % (Cmove, Pmove))
+        result = checkMove(moves, Pmove, Cmove)
+        print()
+        print(result)
+        time.sleep(0.5)
+        if result == "You win!":
+            Pscore += 1 # Increase your score for every win
+        if result == "You lose!":
+            Cscore += 1 # Increase computer's for your every lost
+        print()
+        print("Score:   Player: %s      Computer: %s" %(Pscore, Cscore))
+        i += 1
+    print()
+    if Pscore > Cscore: # You won the overall game.
+        print("Congrats! You won the game.")
+    if Pscore < Cscore: # You lost the overall game.
+        print("Oops! You lost the game.")
+    if not playAgain():
+        print("Thanks for playing.")
+        time.sleep(0.3)
+        break
+    
