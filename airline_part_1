@@ -1,0 +1,196 @@
+import time
+
+def makeSeats(): # Creats a list of lists which will be used as seats.
+    seats = []
+    for i in range(16):
+        seats.append([i, " "]) # The 1st item stores seat number and the second item stores passenger's name.
+    return seats
+
+def showSeats(SEATS, CLASS):    # Prints the seats.
+    for i in "xX Welcome to Raj K's Airlines Xx":
+        time.sleep(0.01)
+        print(i, end = "")
+    print()
+    print()
+    
+    for i in range(4):
+        if i == 2:                                      # Makes horizontal line between 2nd and 3rd row
+             print()
+        for j in range(4):
+            x = i + 4*j
+            if x < 4:
+                print(" "*8, end = "")
+            if x < 8:                                       # First Class Seats
+                if SEATS[x][0] == "X":
+                    print("( %s )" % (SEATS[x][0]), end = " ")
+                else:
+                    print("( %s )" % (SEATS[x][0]+1), end = " ")
+            else:                                           # Economy Class Seats
+                if 7<x<12:                              # Makes space between the first class and economy class seats.
+                    print("    "*3, end = "")
+                if len(str(x+1)) == 1:
+                    if SEATS[x][0] == "X":
+                        print("[ %s ]" % (SEATS[x][0]), end = " ")
+                    else:
+                        print("[ %s ]" % (SEATS[x][0]+1), end = " ")
+                if len(str(x+1)) == 2:
+                    if SEATS[x][0] == "X":
+                        print("[ %s ]" % (SEATS[x][0]), end = " ")
+                    else:
+                        print("[%s ]" % (SEATS[x][0]+1), end = " ")
+        print()
+                
+    for i in range(len(CLASS)):
+        time.sleep(0.2)
+        print(" "*7, CLASS[i], " "*2, end = " ")
+    print()
+    print()
+
+def isValid(index):                                 # Returns only valid inputs.
+    while True:
+        x = input(": ")
+        if x != "" and x.isdigit():
+            if int(x) in index:
+                return int(x)
+        print("Invalid input!")
+        
+def availableSeats(Class, index):       # Returns available seats in a class
+    freeSeats = []
+    for i in index:
+        if SEATS[i-1][0] != "X" and SEATS[i-1][1] == " ": # Blank seat
+            freeSeats.append(i)
+    if len(freeSeats) == 0:                # No seats available
+        return "No seats available in %s." % Class
+    return freeSeats                                 # Else if seats available
+
+def isFull(Class):                                      # Checks if a class is full.
+    if Class == "First Class":
+        i = list(range(8))
+    else:
+        i = list(range(8, 16))
+    for x in i:
+        if SEATS[x][0] != "X" and SEATS[x][1] == " ": # Blank seat
+            return False
+    return True
+
+def exit():                                                 # Asks the user if s/he wants to exit the program
+    while True:
+        print()
+        print("What do you want to do?")
+        print("1) Book another seat.")
+        print("2) See the booked seats.")
+        print("3) Exit the program.")
+        a = input(": ")
+        if a.isdigit():
+            if int(a) in [1 , 2, 3]:                                    # If valid input.
+                return int(a)
+            print("Invalid input. Enter 1 ,2 or 3 only.")
+        if a.isalpha():
+            print("Invalid input")
+
+def showBookedSeats(SEATS):
+    print("Seat             Name")
+    for i in range(len(SEATS)):
+        if SEATS[i][0] == "X":
+            print("  ",i+1, " "*16, SEATS[i][1])
+            
+
+# Functions end and program starts
+SEATS = makeSeats()
+CLASS = ["First Class", "Economy Class"]
+classSeats = {"First Class" : [1, 2, 3, 4, 5, 6, 7, 8], "Economy Class" : [9, 10, 11, 12, 13, 14, 15, 16]} # Class with their seat numbers.
+bookedSeats = []
+while True:
+    print()
+    showSeats(SEATS, CLASS)
+    print()
+    name = input("Enter your name:  ")
+    while name == "":
+        print("No name entered!")
+        name = input("Enter your name:  ")
+    print('''Class:
+1) First Class           2) Economy Class
+Select the class:''')    
+    Class = CLASS[isValid([1, 2]) - 1]
+    while isFull(Class):
+        print("%s is full. Please select another class." % Class)
+        Class = CLASS[isValid([1, 2]) - 1]
+    if CLASS.index(Class) == 0:                 # First class chosen
+        CS = "(1-8)"                                        # Class Seats
+    else:                                                         # Economy class chosen
+        CS = "(9-16)"
+    print("Select the seat %s" % CS)
+    seat = isValid(classSeats[Class])
+    while seat in bookedSeats:                  # If the seat is already booked by someone.
+        print()
+        print("Sorry but that seat is already booked by %s. Please select other available seats." % SEATS[seat-1][1])
+        print("Available seats in %s:" % Class)
+        print(availableSeats(Class, classSeats[Class]))
+        seat = isValid(classSeats[Class])
+    while True:                                             # Confirms the passenger info until confirmed correct
+        print()
+        print("%s, please confirm your information before we book your seat." % name)
+        print('''Name : %s
+Class: %s
+Seat Number: %s''' % (name, Class, seat))
+        print()
+        print("Is your information correct? (Yes/No)")
+        confirm = input().upper()
+        while not (confirm.startswith("Y") or confirm.startswith("N")):
+            print("Invalid input. Enter yes or no only.")
+            confirm = input().upper()
+        if confirm.startswith("N"):                                  # If some information is incorrect
+            print()
+            print('''What do you want to change?
+1) Name
+2) Class
+3) Seat''')
+            change = isValid([1, 2, 3])
+            print()
+            if change == 1:                                 # Change name
+                name = input("Enter you name:  ")
+            elif change == 2:                               # Change class
+                print(''' Class:
+1) First Class           2) Economy Class''')
+                Class = CLASS[isValid([1, 2]) - 1]
+                while isFull(Class):
+                    print("%s is full. Please select another class.")
+                    Class = CLASS[isValid([1, 2]) - 1]
+                if CLASS.index(Class) == 0: 
+                    CS = "(1-8)" 
+                else:
+                    CS = "(9-16)"
+                print("Select the seat %s" % CS)
+                seat = isValid(classSeats[Class])
+                while seat in bookedSeats: 
+                    print("Sorry but that seat is already booked by %s. Please select other available seats." % SEATS[seat-1][1])
+                    print("Available seats in %s:" % Class)
+                    print(availableSeats(Class, classSeats[Class]))
+                    seat = isValid(classSeats[Class])
+            else:                                                   # Change seat
+                if CLASS.index(Class) == 0: 
+                    CS = "(1-8)" 
+                else:
+                    CS = "(9-16)"
+                print("Select the seat %s" % CS)
+                seat = isValid(classSeats[Class])
+                while seat in bookedSeats: 
+                    print("Sorry but that seat is already booked by %s. Please select other available seats." % SEATS[seat-1][1])
+                    print("Available seats in %s:" % Class)
+                    print(availableSeats(Class, classSeats[Class]))
+                    seat = isValid(classSeats[Class])
+        if confirm.startswith("Y"):                                                   # If confirmed.
+            break
+        
+    SEATS[seat-1] = ["X", name]     # Stores the seat and user name and marks the booked seat as X.
+    bookedSeats.append(seat)
+    exitResult = exit()
+    while exitResult == 2:
+        print()
+        showBookedSeats(SEATS)
+        exitResult = exit()
+    if exitResult == 3:
+        time.sleep(0.4)
+        print("Thank you! Have a great day %s." % name)
+        time.sleep(0.4)
+        break
