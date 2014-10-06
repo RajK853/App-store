@@ -1,0 +1,142 @@
+import sys, time
+
+def valid(data, Type):      # Checks if input is valid
+    if len(data) == 0:
+        return False
+    for i in data:
+        if Type == "user name":     # for username
+            if not (i.isdigit() or i.isalpha() or i == "_"):
+                return False
+        if Type == "password":      # for password
+            if not(i.isdigit() or i.isalpha() or i in ("! @ # $ % ^ & *").split()):
+                return False
+    return True
+    
+def signUp(Type):       # Sign Up user
+    userData = input(": ")
+    instruction = {"user name" : "Enter alphabets, numbers or underscores only.", "password" : "Enter alphabets, numbers and the following symbols only: !,@,#,$,%,^,&,*"}
+    while not valid(userData, Type):
+        print("Invalid %s" % Type)
+        print(instruction[Type])
+        userData = input(": ")
+    return userData
+
+def file(mode):         # reads or writes in a file according to the mode
+    if mode == "Sign up":
+        with open("data.txt", "a") as data:
+            data.write(userName1+" "+password+"\n")
+    if mode == "Log in":
+        with open("data.txt", "r") as data:
+            userData = []
+            rawData = data.readlines()  # reads the file line by line and stores each line as a list
+            for line in rawData:
+                userData.append(line.split())
+            return userData
+
+def encrypt(word):  # Encrypts word
+    eWord = ""      # encrypted word
+    for i in word:
+        if ord(i) < 100:    # if the length of ord(i) is 2
+            eWord += "0%s" % str(ord(i))
+        else:
+            eWord += str(ord(i))
+    return eWord
+
+#  - - - - - - - - - - - - - - - - - - Functions end here - - - - - - - - - - - - - - - - - - 
+
+while True:
+    print()
+    print("Welcome to Raj K's game store.")
+    print("1) Log In \n2) Sign up \n3) Exit")
+    MODE = {"1" : "Log in", "2" : "Sign up", "3" : "Exit"}
+    mode = ""
+    while mode not in ("1 2 3").split():
+        mode = input(": ")
+    mode = MODE[mode]
+    if mode == "Sign up":
+        attempts = 0
+        checked = False     # To ensure the user confirmed his details
+        while not checked:  # While not confirmed
+            if attempts == 2:   # Go to start page if not confirmed after 2nd attempt.
+                break
+            print()
+            print("User name ", end = "")
+            userName = signUp("user name")
+            userName1 = encrypt(userName)
+            userInfo = file("Log in")       # gets usernames and passwords from file
+            for i in userInfo:
+                if userName1 in i[0]:
+                    print("User name '%s' is already used. Please choose another user name." % userName)
+                    break
+            if userName1 in i[0]:
+                continue
+            print("Password", end = "")
+            password = signUp("password")
+            print('''Please confirm your account details:
+User name: %s
+Password : %s''' % (userName, password))
+            attempts += 1
+            if input("Are the details correct? (Y/N) \n").lower().startswith("y"):
+                checked = True
+        password = encrypt(password)
+        file(mode)              # Writes encrypted username1 and password to a file
+        continue
+    if mode == "Log in":
+        attempts = 0
+        validUser = False
+        while not validUser:
+            userInfo = file(mode)
+            print()
+            userName = input("User name: ")
+            password = encrypt(input("Password :"))
+            for i, j in userInfo:
+                if encrypt(userName) == i and password == j:
+                    validUser = True
+                    break
+            if not validUser:
+                attempts += 1
+                print("Invalid user name or password.")
+                if attempts == 3:
+                    print("Maximum number of attempts exceeded.")
+                    break
+    if mode == "Exit":
+        print("Thanks for your time.")
+        time.sleep(1)
+        sys.exit()
+    while validUser:     #Game store after log in
+        i, j, password = "", "", ""       # Password cleared to prevent hacking :P
+        print()
+        print("Welcome %s!" % userName)
+        print("- - - - - - - -")
+        print()
+        print("Available apps:")
+        print("- - - - - - ")
+        print("1) Tic Tac Toe            2) Hangman              3) Jackpot             \n4) Rock Paper Scissor     5) Luck Calculator      6) Book airline seat")
+        app = ""
+        while (app not in ("1 2 3 4 5 6").split()) and not app.lower().startswith("log"):
+            print()
+            app = input("Choose the app or log out: ")
+        if app == "1":
+            import Tic_Tac_Toe
+        if app == "2":
+            import Hangman
+        if app == "3":
+            import Jackpot
+        if app == "4":
+            import Rock_Paper_Scissor
+        if app == "5":
+            import Luck_Calculator
+        if app == "6":
+            import airline_part_1
+        if app.lower().startswith("log"):
+            userName = ""
+            break
+        choose = ""
+        while choose not in ("1 2").split():
+            print()
+            print("What do you want to do?")
+            print("1) Go to game store. \n2) Log out")
+            choose = input(": ")
+        if choose == "2":       #Log Out
+            userName = ""
+            break
